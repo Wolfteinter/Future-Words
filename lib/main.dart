@@ -28,6 +28,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Future words',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -94,12 +95,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path + "/data.json'";
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File(path);
+  }
+
+  void _updateFile() async {
+    File file = await _localFile;
+    var j = {};
+    j["words"] = data;
+    String str = json.encode(j);
+    file.writeAsString(str);
+  }
+
   Future<List> readFileAsync() async {
-    Directory appDocDirectory = await getApplicationDocumentsDirectory();
-    var path = appDocDirectory.path + '/assets/data.json';
-    File file = new File(path);
-    if (File(path).existsSync() == false) {
-      new File(path).create(recursive: true);
+    File file = await _localFile;
+    if (file.existsSync() == false) {
+      new File(file.path).create(recursive: true);
       var resBody = {};
       resBody["words"] = [];
       resBody["words"].add({
@@ -114,6 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     var data;
     String raw = await file.readAsString();
+    print("Holaaa");
+    print(raw);
     data = json.decode(raw);
     List words = data["words"];
     return words;
@@ -183,11 +203,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     input.text = "";
     output.text = "";
-    Directory appDocDirectory = await getApplicationDocumentsDirectory();
-    var path = appDocDirectory.path + '/assets/data.json';
+    File file = await _localFile;
     var j = {};
     j["words"] = data;
-    File file = new File(path);
     String str = json.encode(j);
     file.writeAsString(str);
     Navigator.pop(context, 'OK');
@@ -383,11 +401,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startGame() {
     var rng = new Random();
     List wordsToPLay = [];
-    while (wordsToPLay.length < 4) {
-      while (!wordsToPLay.contains(data[_random = rng.nextInt(data.length)])) {
-        wordsToPLay.add(data[_random]);
+    while (true) {
+      while (true) {
+        if (!wordsToPLay.contains(data[_random = rng.nextInt(data.length)])) {
+          wordsToPLay.add(data[_random]);
+          break;
+        }
       }
+      if (wordsToPLay.length == 4) break;
     }
+    print(wordsToPLay.length);
     inputGame.text = wordsToPLay[0]["word"];
     var correctAns = wordsToPLay[0]["translate"];
     wordsToPLay.shuffle();
@@ -558,6 +581,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         onPressed: () {
+                          wordsToPLay.clear();
                           Navigator.pop(context, 'OK');
                           _startGame();
                         },
@@ -833,6 +857,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 element["origin"],
                                 element["dest"]));
                           });
+                          _updateFile();
                         });
                         Navigator.pop(context, 'OK');
                       },
@@ -868,6 +893,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 element["origin"],
                                 element["dest"]));
                           });
+                          _updateFile();
                           Navigator.pop(context, 'OK');
                         });
                       },
@@ -884,22 +910,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Image.asset(
-              "assets/icon.png",
-              width: 50.0,
-              height: 50.0,
+        toolbarHeight: 80,
+        title: Row(
+          children: [
+            TextButton(
+              onPressed: _personalPresentation,
+              child: CircleAvatar(
+                radius: 30.0,
+                backgroundImage: AssetImage("assets/icon.png"),
+              ),
             ),
-            onPressed: () {
-              _personalPresentation();
-            },
-          )
-        ],
-        toolbarHeight: 60,
-        title: Text(
-          widget.title,
-          style: TextStyle(fontSize: 30),
+            SizedBox(width: 10),
+            Text(
+              widget.title,
+              style: TextStyle(fontSize: 30),
+            )
+          ],
         ),
       ),
       body: ListView.builder(
@@ -928,8 +954,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           SizedBox(width: 5),
                           Text(
                             item.sender,
+                            softWrap: true,
                             style: TextStyle(
-                              fontSize: 25.0,
+                              fontSize: 20.0,
                             ),
                           ),
                         ],
@@ -945,8 +972,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           SizedBox(width: 5),
                           Text(
                             item.body,
+                            softWrap: true,
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: 15.0,
                             ),
                           ),
                         ],
