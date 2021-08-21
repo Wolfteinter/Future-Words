@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.english_rememberer">
    <application
-        android:label="english_rememberer"
+        android:label="Future Words"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
