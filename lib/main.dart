@@ -12,7 +12,6 @@ import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:country_icons/country_icons.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'itemList.dart';
 import 'itemCard.dart';
 import 'newWord.dart';
@@ -204,9 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             height: 25.0,
                           ),
                           SizedBox(width: 5),
-                          AutoSizeText(
+                          Text(
                             item.word,
-                            minFontSize: 10,
                             maxLines: 2,
                             style: TextStyle(
                               fontSize: 20.0,
@@ -223,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             height: 25.0,
                           ),
                           SizedBox(width: 5),
-                          AutoSizeText(
+                          Text(
                             item.translation,
                             softWrap: true,
                             style: TextStyle(

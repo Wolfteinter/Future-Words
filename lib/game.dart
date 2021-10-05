@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'itemList.dart';
 import 'langIcon.dart';
@@ -131,7 +130,7 @@ class _GameState extends State<Game> {
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.blue),
                         ),
-                        child: AutoSizeText(
+                        child: Text(
                           _wordsToPLay[0].translation,
                           maxLines: 2,
                           style: TextStyle(
@@ -154,7 +153,7 @@ class _GameState extends State<Game> {
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.blue),
                         ),
-                        child: AutoSizeText(
+                        child: Text(
                           _wordsToPLay[1].translation,
                           maxLines: 2,
                           style: TextStyle(
@@ -183,7 +182,7 @@ class _GameState extends State<Game> {
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.blue),
                         ),
-                        child: AutoSizeText(
+                        child: Text(
                           _wordsToPLay[2].translation,
                           maxLines: 2,
                           style: TextStyle(
@@ -206,7 +205,7 @@ class _GameState extends State<Game> {
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.blue),
                         ),
-                        child: AutoSizeText(
+                        child: Text(
                           _wordsToPLay[3].translation,
                           maxLines: 2,
                           style: TextStyle(

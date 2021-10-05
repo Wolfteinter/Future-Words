@@ -33,8 +33,7 @@ dependencies:
   syncfusion_flutter_charts: ^19.2.55+1
   syncfusion_flutter_datagrid: ^19.2.55-beta
   country_icons: ^2.0.2
-  auto_size_text: ^2.1.0
-  confetti: ^0.5.5
+  confetti: ^0.6.0
 
 dev_dependencies:
   flutter_test:
