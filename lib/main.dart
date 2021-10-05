@@ -68,7 +68,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _addToList(ItemList item) {
     setState(() {
-      _listOfItems.add(item);
+      Iterable<ItemList> element = _listOfItems.where((element) {
+        return element.word == item.word;
+      });
+      if (element.isEmpty) {
+        _listOfItems.add(item);
+      } else {
+        int index = _listOfItems.indexOf(element.first);
+        _listOfItems[index].count++;
+      }
       Utils.updateFileFromList(_listOfItems);
     });
   }
@@ -106,17 +114,21 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.transparent,
             builder: (context) => NewWord(_addToList));
       } else if (index == 1) {
-        showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Game(_listOfItems, _startGame));
+        if (_listOfItems.length > 4) {
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => Game(_listOfItems, _startGame));
+        }
       } else {
-        showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Stats(_listOfItems));
+        if (_listOfItems.length > 4) {
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => Stats(_listOfItems));
+        }
       }
     });
   }
