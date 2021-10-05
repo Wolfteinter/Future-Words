@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
-  auto_size_text:
-    dependency: "direct main"
-    description:
-      name: auto_size_text
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -56,7 +49,7 @@ packages:
       name: confetti
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.5"
+    version: "0.6.0"
   country_icons:
     dependency: "direct main"
     description:
@@ -150,14 +143,14 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.4"
   path_provider_linux:
     dependency: transitive
     description:
       name: path_provider_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   path_provider_macos:
     dependency: transitive
     description:
@@ -192,14 +185,14 @@ packages:
       name: platform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.2"
   plugin_platform_interface:
     dependency: transitive
     description:
       name: plugin_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   process:
     dependency: transitive
     description:
@@ -207,13 +200,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.3"
-  random_color:
-    dependency: transitive
-    description:
-      name: random_color
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.5"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -253,21 +239,21 @@ packages:
       name: syncfusion_flutter_charts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.2.55+1"
+    version: "19.3.43"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.2.55"
+    version: "19.3.43+1"
   syncfusion_flutter_datagrid:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_datagrid
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "19.2.55-beta"
+    version: "19.3.43"
   term_glyph:
     dependency: transitive
     description:
@@ -309,7 +295,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.5"
+    version: "2.2.9"
   xdg_directories:
     dependency: transitive
     description:
