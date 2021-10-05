@@ -68,7 +68,7 @@ class _NewWordState extends State<NewWord> {
               child: TextField(
                   autofocus: true,
                   controller: wordController,
-                  maxLength: 18,
+                  maxLength: 25,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter a new word',
@@ -111,7 +111,7 @@ class _NewWordState extends State<NewWord> {
                   controller: translateController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'Here is the translate word',
+                    hintText: 'Translation',
                     suffixIcon: DropdownButton(
                         value: dropDownItems[2],
                         icon: const Icon(Icons.arrow_downward),

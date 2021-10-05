@@ -203,11 +203,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             height: 25.0,
                           ),
                           SizedBox(width: 5),
-                          Text(
-                            item.word,
-                            maxLines: 2,
-                            style: TextStyle(
-                              fontSize: 20.0,
+                          FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: Text(
+                              item.word,
                             ),
                           ),
                         ],
@@ -224,9 +223,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           Text(
                             item.translation,
                             softWrap: true,
-                            style: TextStyle(
-                              fontSize: 15.0,
-                            ),
                           ),
                         ],
                       ),
