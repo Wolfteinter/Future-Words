@@ -26,10 +26,13 @@ class _NewWordState extends State<NewWord> {
     LangIcon("icons/flags/png/de.png", "de"),
     LangIcon("icons/flags/png/mx.png", "es")
   ];
-  LangIcon wordIcon = LangIcon("icons/flags/png/us.png", "en");
-  LangIcon translationIcon = LangIcon("icons/flags/png/mx.png", "es");
+  LangIcon wordIcon = new LangIcon("icons/flags/png/us.png", "en");
+  LangIcon translationIcon = new LangIcon("icons/flags/png/mx.png", "es");
+
   @override
   Widget build(BuildContext context) {
+    print(wordIcon.path);
+    print(translationIcon.path);
     return Container(
         height: MediaQuery.of(context).size.height * 0.8,
         decoration: new BoxDecoration(
@@ -73,7 +76,11 @@ class _NewWordState extends State<NewWord> {
                     border: OutlineInputBorder(),
                     hintText: 'Enter a new word',
                     suffixIcon: DropdownButton(
-                        value: dropDownItems[0],
+                        value: this.wordIcon == null
+                            ? this.wordIcon
+                            : dropDownItems
+                                .where((i) => i.path == this.wordIcon.path)
+                                .first,
                         icon: const Icon(Icons.arrow_downward),
                         iconSize: 30,
                         elevation: 16,
@@ -84,16 +91,16 @@ class _NewWordState extends State<NewWord> {
                         ),
                         onChanged: (LangIcon? newValue) {
                           setState(() {
-                            wordIcon = newValue!;
+                            this.wordIcon = newValue!;
                           });
                         },
                         items: dropDownItems
-                            .map<DropdownMenuItem<LangIcon>>((value) {
+                            .map<DropdownMenuItem<LangIcon>>((LangIcon v) {
                           return DropdownMenuItem(
-                            value: value,
+                            value: v,
                             child: Tab(
                                 icon: Image.asset(
-                              value.path,
+                              v.path,
                               package: 'country_icons',
                               width: 30.0,
                               height: 30.0,
@@ -113,7 +120,12 @@ class _NewWordState extends State<NewWord> {
                     border: OutlineInputBorder(),
                     hintText: 'Translation',
                     suffixIcon: DropdownButton(
-                        value: dropDownItems[2],
+                        value: this.translationIcon == null
+                            ? this.translationIcon
+                            : dropDownItems
+                                .where(
+                                    (i) => i.path == this.translationIcon.path)
+                                .first,
                         icon: const Icon(Icons.arrow_downward),
                         iconSize: 30,
                         elevation: 16,
@@ -124,16 +136,18 @@ class _NewWordState extends State<NewWord> {
                         ),
                         onChanged: (LangIcon? newValue) {
                           setState(() {
-                            translationIcon = newValue!;
+                            print(this.translationIcon.path);
+                            this.translationIcon = newValue!;
+                            print(this.translationIcon.path);
                           });
                         },
                         items: dropDownItems
-                            .map<DropdownMenuItem<LangIcon>>((LangIcon value) {
+                            .map<DropdownMenuItem<LangIcon>>((LangIcon v) {
                           return DropdownMenuItem(
-                            value: value,
+                            value: v,
                             child: Tab(
                                 icon: Image.asset(
-                              value.path,
+                              v.path,
                               package: 'country_icons',
                               width: 30.0,
                               height: 30.0,
