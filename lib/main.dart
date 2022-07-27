@@ -84,6 +84,28 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _showDialog() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Necessary actions',
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+                color: Colors.green)),
+        content: const Text(
+            'To use this mode you need to add at least 5 words.',
+            style: const TextStyle(fontSize: 18, color: Colors.black)),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _startGame() {
     showModalBottomSheet(
         context: context,
@@ -102,20 +124,24 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.transparent,
             builder: (context) => NewWord(_addToList));
       } else if (index == 1) {
-        if (_listOfItems.length > 4) {
+        if (_listOfItems.length >= 5) {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
               builder: (context) => Game(_listOfItems, _startGame));
+        } else {
+          _showDialog();
         }
       } else {
-        if (_listOfItems.length > 4) {
+        if (_listOfItems.length >= 5) {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
               builder: (context) => Stats(_listOfItems));
+        } else {
+          _showDialog();
         }
       }
     });

@@ -43,7 +43,7 @@ android {
         applicationId "com.future.words"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 4
+        versionCode 5
         versionName flutterVersionName
         multiDexEnabled true
         ndk {
