@@ -1,4 +1,4 @@
-package com.example.english_rememberer
+package com.future.words
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
 import 'itemList.dart';
 
 class ItemCard extends StatefulWidget {

@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:future_words/newWord.dart';
-import 'package:translator/translator.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'dart:math';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:country_icons/country_icons.dart';
 import 'itemList.dart';
 import 'itemCard.dart';
 import 'newWord.dart';

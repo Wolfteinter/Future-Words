@@ -1,14 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:translator/translator.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
-import 'package:flutter/services.dart';
-import 'dart:math';
+
 import 'itemList.dart';
-import 'package:translator/translator.dart';
+
 
 class Utils {
   static final translator = GoogleTranslator();
