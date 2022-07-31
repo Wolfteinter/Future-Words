@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'itemList.dart';
+import 'models/entry.dart';
 
 class ItemCard extends StatefulWidget {
-  final ItemList item;
+  final Entry item;
   final int index;
   final Function delete;
   final Function update;
@@ -18,7 +18,7 @@ class _ItemCardState extends State<ItemCard> {
   TextEditingController translateController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    wordController.text = widget.item.word;
+    wordController.text = widget.item.value;
     translateController.text = widget.item.translation;
     return Container(
         height: MediaQuery.of(context).size.height * 0.8,
@@ -93,7 +93,7 @@ class _ItemCardState extends State<ItemCard> {
                       ),
                     ),
                     onPressed: () {
-                      widget.delete(widget.index);
+                      widget.delete(widget.item.id);
                       Navigator.pop(context);
                     },
                   ),

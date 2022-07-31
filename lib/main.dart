@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:future_words/newWord.dart';
 import 'package:flutter/services.dart';
-import 'itemList.dart';
+import 'package:future_words/sqlHelper.dart';
 import 'itemCard.dart';
 import 'newWord.dart';
 import 'game.dart';
-import 'stats.dart';
-import 'utils.dart';
+import 'package:flutter/widgets.dart';
+import 'models/entry.dart';
+import 'models/group.dart';
+import 'models/language.dart';
+import 'palette.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MyApp());
 }
 
@@ -26,7 +31,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Future words',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Palette.kToDark,
       ),
       home: MyHomePage(title: 'Future words'),
     );
@@ -44,45 +49,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   //List with all items
-  List<ItemList> _listOfItems = [];
-  //Map for the image path from name
-  Map<String, String> _langdicc = {
-    "en": "icons/flags/png/us.png",
-    "de": "icons/flags/png/de.png",
-    "es": "icons/flags/png/mx.png"
-  };
+  final DatabaseService _databaseService = DatabaseService();
+  List<Entry> _entries = [];
+  List<Language> _languages = [];
+  List<Group> _groups = [];
+  Group? _group;
+  Map<int, String> _languagesdicc = {};
+
   //The index selected in the menu bar
   int _selectedIndex = 0;
-
-  void _addToList(ItemList item) {
-    setState(() {
-      Iterable<ItemList> element = _listOfItems.where((element) {
-        return element.word == item.word;
-      });
-      if (element.isEmpty) {
-        _listOfItems.add(item);
-      } else {
-        int index = _listOfItems.indexOf(element.first);
-        _listOfItems[index].count++;
-      }
-      Utils.updateFileFromList(_listOfItems);
-    });
-  }
-
-  void _deleteFromList(int index) {
-    setState(() {
-      _listOfItems.removeAt(index);
-      Utils.updateFileFromList(_listOfItems);
-    });
-  }
-
-  void _updateList(int index, String word, String translate) {
-    setState(() {
-      _listOfItems[index].word = word;
-      _listOfItems[index].translation = translate;
-      Utils.updateFileFromList(_listOfItems);
-    });
-  }
 
   void _showDialog() {
     showDialog<String>(
@@ -106,12 +81,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _addEntry(Entry entry) async {
+    await _databaseService.insertEntry(entry);
+    var aux = await _databaseService.entries(_group!.id!);
+    setState(() {
+      _entries = aux;
+    });
+  }
+
+  void _addGroup(Group group) async {
+    await _databaseService.insertGroup(group);
+    var aux = await _databaseService.groups();
+    setState(() {
+      _groups = aux;
+    });
+  }
+
+  void _deleteEntry(int id) async {
+    await _databaseService.deleteEntry(id);
+    List<Entry> _aux = await _databaseService.entries(_group!.id!);
+    setState(() {
+      _entries = _aux;
+    });
+  }
+
+  void _updateVTEntry(int index, String value, String translation) {
+    Entry toUpdate = _entries[index];
+    toUpdate.value = value;
+    toUpdate.translation = translation;
+    _databaseService.updateEntry(toUpdate);
+    setState(() {});
+  }
+
+  void _updateCEntry(int id, int counter) async {
+    Entry toUpdate = _entries.where((i) => i.id == id).first;
+    toUpdate.count = toUpdate.count! + counter;
+    await _databaseService.updateEntryById(toUpdate, id);
+    List<Entry> _aux = await _databaseService.entries(_group!.id!);
+    setState(() {
+      _entries = _aux;
+    });
+  }
+
   void _startGame() {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => Game(_listOfItems, _startGame));
+        builder: (context) => Game(_entries, _startGame, _updateCEntry));
   }
 
   void _onItemTapped(int index) {
@@ -122,24 +139,15 @@ class _MyHomePageState extends State<MyHomePage> {
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            builder: (context) => NewWord(_addToList));
+            builder: (context) => new NewWord(
+                _addEntry, _addGroup, _languages, _groups, _databaseService));
       } else if (index == 1) {
-        if (_listOfItems.length >= 5) {
+        if (_entries.length >= 5) {
           showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
-              builder: (context) => Game(_listOfItems, _startGame));
-        } else {
-          _showDialog();
-        }
-      } else {
-        if (_listOfItems.length >= 5) {
-          showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => Stats(_listOfItems));
+              builder: (context) => Game(_entries, _startGame, _updateCEntry));
         } else {
           _showDialog();
         }
@@ -153,9 +161,25 @@ class _MyHomePageState extends State<MyHomePage> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    Utils.getListOfWords().then((List<ItemList> value) {
+    print("initState");
+
+    _databaseService.languages().then((List<Language> value) {
       setState(() {
-        _listOfItems = value;
+        _languages = value;
+        _languages.forEach((value) {
+          _languagesdicc[value.id!] = value.path;
+        });
+      });
+    });
+    _databaseService.groups().then((List<Group> value) {
+      setState(() {
+        _groups = value;
+        _group = _groups[0];
+      });
+      _databaseService.entries(_group!.id!).then((List<Entry> value) {
+        setState(() {
+          _entries = value;
+        });
       });
     });
   }
@@ -171,29 +195,63 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 80,
-        title: Row(
-          children: [
-            TextButton(
-              onPressed: () {},
-              child: CircleAvatar(
-                radius: 30.0,
-                backgroundImage: AssetImage("assets/icon.png"),
+          toolbarHeight: 70,
+          title: Row(
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: CircleAvatar(
+                  radius: 20.0,
+                  backgroundImage: AssetImage("assets/icon.png"),
+                ),
               ),
-            ),
-            SizedBox(width: 10),
-            Text(
-              widget.title,
-              style: TextStyle(fontSize: 30),
-            )
-          ],
-        ),
-      ),
+              SizedBox(width: 1),
+              Text(
+                widget.title,
+                style: TextStyle(fontSize: 21),
+              ),
+              SizedBox(width: 10),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.40,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10)),
+                child: DropdownButton<Group>(
+                  isExpanded: true,
+                  value: _group == null
+                      ? _group
+                      : _groups.where((i) => i.id == _group?.id).first,
+                  onChanged: (Group? newValue) async {
+                    var aux = await _databaseService.entries(newValue!.id!);
+                    setState(() {
+                      _group = newValue;
+                      _entries = aux;
+                    });
+                  },
+                  items: _groups.map((Group item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(item.name,
+                          style: TextStyle(
+                            height: 1.0,
+                            fontSize: 20,
+                          )),
+                    );
+                  }).toList(),
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 42,
+                  underline: SizedBox(),
+                ),
+              )
+            ],
+          )),
       body: ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: _listOfItems.length,
+        itemCount: _entries.length,
         itemBuilder: (context, index) {
-          var item = _listOfItems[index];
+          var item = _entries[index];
           return Card(
               elevation: 5,
               child: InkWell(
@@ -203,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
                         builder: (context) => ItemCard(
-                            item, index, _deleteFromList, _updateList));
+                            item, index, _deleteEntry, _updateVTEntry));
                   },
                   child: ListTile(
                       leading: Text((index + 1).toString(),
@@ -212,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: Row(
                         children: [
                           Image.asset(
-                            _langdicc[item.origin].toString(),
+                            _languagesdicc[item.sourceLangId].toString(),
                             package: 'country_icons',
                             width: 25.0,
                             height: 25.0,
@@ -221,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           FittedBox(
                             fit: BoxFit.fitWidth,
                             child: Text(
-                              item.word,
+                              item.value,
                             ),
                           ),
                         ],
@@ -229,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       subtitle: Row(
                         children: [
                           Image.asset(
-                            _langdicc[item.dest].toString(),
+                            _languagesdicc[item.translationLangId].toString(),
                             package: 'country_icons',
                             width: 25.0,
                             height: 25.0,
@@ -248,7 +306,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 40,
-        backgroundColor: Colors.green,
+        backgroundColor: Palette.kToDark,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -257,10 +315,6 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.gamepad),
             label: 'Play',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.view_week),
-            label: 'Stats',
           ),
         ],
         currentIndex: _selectedIndex,

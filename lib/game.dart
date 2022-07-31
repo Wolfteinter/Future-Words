@@ -3,12 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
-import 'itemList.dart';
+import 'package:future_words/palette.dart';
+import 'models/entry.dart';
 
 class Game extends StatefulWidget {
-  final List<ItemList> _items;
+  final List<Entry> _items;
   final Function start;
-  const Game(this._items, this.start, {Key? key}) : super(key: key);
+  final Function? _updateCEntry;
+  const Game(this._items, this.start, this._updateCEntry, {Key? key})
+      : super(key: key);
 
   @override
   _GameState createState() => _GameState();
@@ -16,7 +19,8 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   var correctAns;
-  List<ItemList> _wordsToPLay = [];
+  int? _correctId;
+  List<Entry> _wordsToPLay = [];
   TextEditingController wordController = new TextEditingController();
   ConfettiController _controllerCenter =
       ConfettiController(duration: const Duration(seconds: 1));
@@ -34,6 +38,63 @@ class _GameState extends State<Game> {
     super.dispose();
   }
 
+  void checkAnswer(String response) {
+    if (response == correctAns) {
+      _showDialog(true, "Correct", "You want to decresse the counter");
+      _controllerCenter.play();
+    } else {
+      _showDialog(false, "Incorrect", "You want to increse the counter");
+    }
+  }
+
+  void _showDialog(bool correct, String opt, String text) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(opt,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+                color: (correct == true) ? Colors.green : Colors.red)),
+        content: Text(text,
+            style: const TextStyle(fontSize: 18, color: Colors.black)),
+        actions: <Widget>[
+          TextButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+            ),
+            onPressed: () {
+              widget._updateCEntry!(_correctId, (correct == true ? -1 : 1));
+              Navigator.pop(context, 'OK');
+            },
+            child: const Text(
+              'Yes',
+              style: TextStyle(
+                height: 1.0,
+                fontSize: 15,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          TextButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+            ),
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text(
+              'No',
+              style: TextStyle(
+                height: 1.0,
+                fontSize: 15,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void ganerateQuestions() {
     List items = widget._items;
     var rng = new Random();
@@ -48,8 +109,9 @@ class _GameState extends State<Game> {
       }
       if (_wordsToPLay.length == 4) break;
     }
-    wordController.text = _wordsToPLay[0].word;
+    wordController.text = _wordsToPLay[0].value;
     correctAns = _wordsToPLay[0].translation;
+    _correctId = _wordsToPLay[0].id;
     _wordsToPLay.shuffle();
   }
 
@@ -86,7 +148,7 @@ class _GameState extends State<Game> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.08,
                 decoration: new BoxDecoration(
-                  color: Colors.green,
+                  color: Palette.kToDark,
                   borderRadius: new BorderRadius.only(
                     topLeft: const Radius.circular(25.0),
                     topRight: const Radius.circular(25.0),
@@ -122,7 +184,7 @@ class _GameState extends State<Game> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              MaterialStateProperty.all<Color>(Palette.second),
                         ),
                         child: Text(
                           _wordsToPLay[0].translation,
@@ -133,10 +195,7 @@ class _GameState extends State<Game> {
                           ),
                         ),
                         onPressed: () {
-                          if (_wordsToPLay[0].translation == correctAns) {
-                            print("yeeeh");
-                            _controllerCenter.play();
-                          }
+                          checkAnswer(_wordsToPLay[0].translation);
                         },
                       )),
                   Container(
@@ -145,7 +204,7 @@ class _GameState extends State<Game> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              MaterialStateProperty.all<Color>(Palette.second),
                         ),
                         child: Text(
                           _wordsToPLay[1].translation,
@@ -156,10 +215,7 @@ class _GameState extends State<Game> {
                           ),
                         ),
                         onPressed: () {
-                          if (_wordsToPLay[1].translation == correctAns) {
-                            print("yeeeh");
-                            _controllerCenter.play();
-                          }
+                          checkAnswer(_wordsToPLay[1].translation);
                         },
                       ))
                 ],
@@ -174,7 +230,7 @@ class _GameState extends State<Game> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              MaterialStateProperty.all<Color>(Palette.second),
                         ),
                         child: Text(
                           _wordsToPLay[2].translation,
@@ -185,10 +241,7 @@ class _GameState extends State<Game> {
                           ),
                         ),
                         onPressed: () {
-                          if (_wordsToPLay[2].translation == correctAns) {
-                            print("yeeeh");
-                            _controllerCenter.play();
-                          }
+                          checkAnswer(_wordsToPLay[2].translation);
                         },
                       )),
                   Container(
@@ -197,7 +250,7 @@ class _GameState extends State<Game> {
                       child: TextButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              MaterialStateProperty.all<Color>(Palette.second),
                         ),
                         child: Text(
                           _wordsToPLay[3].translation,
@@ -208,10 +261,7 @@ class _GameState extends State<Game> {
                           ),
                         ),
                         onPressed: () {
-                          if (_wordsToPLay[3].translation == correctAns) {
-                            print("yeeeh");
-                            _controllerCenter.play();
-                          }
+                          checkAnswer(_wordsToPLay[3].translation);
                         },
                       )),
                 ],
